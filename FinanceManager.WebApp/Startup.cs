@@ -1,6 +1,8 @@
 using FinanceManager.Core.Entities;
+using FinanceManager.Core.Repositories;
 using FinanceManager.Infrastructure;
 using FinanceManager.Infrastructure.Data;
+using FinanceManager.Infrastructure.Data.RepositoryImplementations;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +36,8 @@ namespace FinanceManager.WebApp
 
             services.Configure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme,
                 options => options.LoginPath = "/Identity/Account/Login");
+
+            services.AddTransient<IMoneyAccountRepository, EFMoneyAccountRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

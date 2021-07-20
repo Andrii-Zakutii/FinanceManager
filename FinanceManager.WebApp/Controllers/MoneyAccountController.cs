@@ -1,32 +1,74 @@
 ﻿using FinanceManager.Core.Entities;
+using FinanceManager.Core.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace FinanceManager.WebApp.Controllers
 {
     [Authorize]
     public class MoneyAccountController : Controller
     {
+        private readonly UserManager<User> _userManager;
+        private readonly IMoneyAccountRepository _accountRepository;
+
+        public MoneyAccountController(
+            IMoneyAccountRepository accountRepository,
+            UserManager<User> userManager)
+        {
+            _accountRepository = accountRepository;
+            _userManager = userManager;
+        }
 
         public IActionResult Index()
         {
-            return View(new List<MoneyAccount>());
+            var user = _userManager.GetUserAsync(User).Result;
+            var accounts = _accountRepository.GetAll(user);
+            return View(accounts);
         }
 
-        public IActionResult Details()
+        public IActionResult Create()
         {
-            return View();
+            var user = _userManager.GetUserAsync(User).Result;
+            return View(new MoneyAccount { UserId = user.Id });
         }
 
-        public IActionResult Edit()
+        [HttpPost]
+        public IActionResult Create(MoneyAccount account)
         {
-            return View();
+            if (ModelState.IsValid == false)
+                return View();
+
+            // TODO: Check user
+            _accountRepository.Add(account);
+            return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete()
+        public IActionResult Update(long id) => 
+            View(_accountRepository.Get(id));
+
+        [HttpPost]
+        public IActionResult Update(MoneyAccount account)
         {
-            return View();
+            if (ModelState.IsValid == false)
+                return View();
+
+            // TODO: Check user
+            _accountRepository.Update(account);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Delete(long id)
+        {
+            return View(_accountRepository.Get(id));
+        }
+
+        [HttpPost]
+        public IActionResult Delete(MoneyAccount account)
+        {
+            // TODO: Check user
+            _accountRepository.Delete(account);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

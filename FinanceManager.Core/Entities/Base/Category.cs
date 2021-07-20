@@ -6,6 +6,7 @@ namespace FinanceManager.Core.Entities.Base
     {
         [Required]
         public string Name { get; set; }
+
         public string Description { get; set; }
     }
 }

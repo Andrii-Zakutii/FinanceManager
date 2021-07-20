@@ -1,9 +1,16 @@
 ﻿@model IEnumerable<MoneyAccount>
 
-<h3 class="display-4 pt-2">Money Accounts</h3>
+@{
+    ViewData["Title"] = "Money Accounts";
+}
 
-<table>
-    <thead>
+<h3 class="display-4 pt-2">Money Accounts</h3>
+<div class="pt-2">
+    <a asp-action="Create" class="btn btn-primary">Create</a>
+</div>
+<div class="pt-2">
+    <table class="table">
+    <thead class="thead-light">
         <tr>
             <th>Name</th>
             <th></th>
@@ -15,10 +22,12 @@
             <tr>
                 <td>@account.Name</td>
                 <td>
-                    <a asp-action="Details" class="btn btn-primary">Details</a>
-                    <a asp-action="Delete" class="btn btn-primary">Delete</a>
+                    <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-primary">Details</a>
+                    <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-outline-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@account.Id" class="btn btn-outline-danger">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
-</table>
+    </table>
+</div>
