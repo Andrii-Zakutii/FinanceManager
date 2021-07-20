@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FinanceManager.WebApp.Models.Base
+namespace FinanceManager.Core.Entities.Base
 {
     public abstract class Transaction : Entity
     {

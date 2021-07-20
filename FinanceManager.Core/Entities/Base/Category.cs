@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FinanceManager.WebApp.Models.Base
+namespace FinanceManager.Core.Entities.Base
 {
     public abstract class Category : Entity
     {

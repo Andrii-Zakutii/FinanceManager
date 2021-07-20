@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
-namespace FinanceManager.WebApp.Models
+namespace FinanceManager.Core.Entities
 {
     public class User : IdentityUser
     {

@@ -1,7 +1,7 @@
-﻿using FinanceManager.WebApp.Models.Base;
+﻿using FinanceManager.Core.Entities.Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace FinanceManager.WebApp.Models
+namespace FinanceManager.Core.Entities
 {
     public class Expense : Transaction
     {
