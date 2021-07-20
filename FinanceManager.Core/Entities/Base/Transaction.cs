@@ -12,5 +12,7 @@ namespace FinanceManager.Core.Entities.Base
 
         [Required]
         public DateTime Time { get; set; }
+
+        public string Description { get; set; }
     }
 }

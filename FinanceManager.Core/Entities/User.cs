@@ -5,6 +5,6 @@ namespace FinanceManager.Core.Entities
 {
     public class User : IdentityUser
     {
-        public IEnumerable<Account> Accounts { get; set; }
+        public IEnumerable<MoneyAccount> Accounts { get; set; }
     }
 }

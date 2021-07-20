@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace FinanceManager.Core.Entities
 {
-    public class Account : Entity
+    public class MoneyAccount : Entity
     {
+        public string Name { get; set; }
         public IEnumerable<Income> Incomes { get; set; }
         public IEnumerable<Expense> Expenses { get; set; }
     }
