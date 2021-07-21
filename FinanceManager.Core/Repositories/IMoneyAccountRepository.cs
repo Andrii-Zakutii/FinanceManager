@@ -1,14 +1,10 @@
 ﻿using FinanceManager.Core.Entities;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace FinanceManager.Core.Repositories
 {
-    public interface IMoneyAccountRepository
+    public interface IMoneyAccountRepository : ICRUDRepository<MoneyAccount>
     {
-        IEnumerable<MoneyAccount> GetAll(User user);
-        MoneyAccount Get(long id);
-        void Add(MoneyAccount moneyAccount);
-        void Update(MoneyAccount moneyAccount);
-        void Delete(MoneyAccount moneyAccount);
+        IQueryable<MoneyAccount> GetAll(User user);
     }
 }

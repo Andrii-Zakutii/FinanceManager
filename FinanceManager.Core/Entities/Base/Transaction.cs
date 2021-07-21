@@ -14,5 +14,9 @@ namespace FinanceManager.Core.Entities.Base
         public DateTime Time { get; set; }
 
         public string Description { get; set; }
+
+        public long MoneyAccountId { get; set; }
+
+        public MoneyAccount MoneyAccount { get; set; }
     }
 }

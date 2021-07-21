@@ -44,7 +44,7 @@ namespace FinanceManager.WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Update(long id) => 
+        public IActionResult Update(long id) =>
             View(_accountRepository.Get(id));
 
         [HttpPost]
