@@ -1,83 +1,86 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FinanceManager.Core.Entities;
+using FinanceManager.Core.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace FinanceManager.WebApp.Controllers
 {
     public class TransactionController : Controller
     {
+        private readonly UserManager<User> _userManager;
+        private readonly IMoneyAccountRepository _accountRepository;
+        private readonly ITransactionRepository _transactionRepository;
 
-        public ActionResult Index()
+        public TransactionController(
+            ITransactionRepository transactionRepository,
+            IMoneyAccountRepository accountRepository,
+            UserManager<User> userManager)
         {
-            return View();
+            _transactionRepository = transactionRepository;
+            _accountRepository = accountRepository;
+            _userManager = userManager;
         }
 
-        // GET: TransactionController/Details/5
-        public ActionResult Details(int id)
+        [HttpGet]
+        public IActionResult Index()
         {
-            return View();
+            var user = _userManager.GetUserAsync(User).Result;
+            var transactions = _transactionRepository.GetAll(user);
+            return View(transactions);
         }
 
-        // GET: TransactionController/Create
-        public ActionResult Create()
+        [HttpGet]
+        public IActionResult Create()
         {
-            return View();
+            var user = _userManager.GetUserAsync(User).Result;
+            var newAccount = new MoneyAccount { UserId = user.Id };
+            return View(newAccount);
         }
 
-        // POST: TransactionController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create(MoneyAccount account)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+            if (ModelState.IsValid == false)
                 return View();
-            }
+
+            CheckUser(account);
+            _accountRepository.Add(account);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: TransactionController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
+        [HttpGet]
+        public IActionResult Update(long id) => View(_accountRepository.Get(id));
 
-        // POST: TransactionController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Update(MoneyAccount account)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+            if (ModelState.IsValid == false)
                 return View();
-            }
+
+            CheckUser(account);
+            _accountRepository.Update(account);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: TransactionController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+        [HttpGet]
+        public IActionResult Delete(long id) => View(_accountRepository.Get(id));
 
-        // POST: TransactionController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult Delete(MoneyAccount account)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            CheckUser(account);
+            _accountRepository.Delete(account);
+            return RedirectToAction(nameof(Index));
+        }
+
+        private void CheckUser(MoneyAccount account)
+        {
+            var user = _userManager.GetUserAsync(User).Result;
+
+            if (account.BelongsTo(user) == false)
+                throw new Exception("Account doesn't belong to current user");
         }
     }
 }

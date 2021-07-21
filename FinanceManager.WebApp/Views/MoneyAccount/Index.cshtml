@@ -10,24 +10,26 @@
 </div>
 <div class="pt-2">
     <table class="table">
-    <thead class="thead-light">
-        <tr>
-            <th>Name</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var account in Model)
-        {
+        <thead class="thead-light">
             <tr>
-                <td>@account.Name</td>
-                <td>
-                    <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-primary">Details</a>
-                    <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-outline-primary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@account.Id" class="btn btn-outline-danger">Delete</a>
-                </td>
+                <th>Name</th>
+                <th>Initial Sum</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
+        </thead>
+        <tbody>
+            @foreach (var account in Model)
+            {
+                <tr>
+                    <td>@account.Name</td>
+                    <td>@Html.Raw($"{account.InitialSum:c}")</td>
+                    <td>
+                        <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-primary">Details</a>
+                        <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-outline-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@account.Id" class="btn btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
     </table>
 </div>

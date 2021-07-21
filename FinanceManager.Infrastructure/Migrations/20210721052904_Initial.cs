@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace FinanceManager.WebApp.Migrations
+namespace FinanceManager.Infrastructure.Migrations
 {
     public partial class Initial : Migration
     {
@@ -47,29 +47,18 @@ namespace FinanceManager.WebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExpenseCategory",
+                name: "Category",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExpenseCategory", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "IncomeCategory",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IncomeCategory", x => x.Id);
+                    table.PrimaryKey("PK_Category", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,25 +80,6 @@ namespace FinanceManager.WebApp.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Account",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Account", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Account_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -198,65 +168,55 @@ namespace FinanceManager.WebApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Expense",
+                name: "MoneyAccounts",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryId = table.Column<long>(type: "bigint", nullable: true),
-                    AccountId = table.Column<long>(type: "bigint", nullable: true),
-                    Sum = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InitialSum = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Expense", x => x.Id);
+                    table.PrimaryKey("PK_MoneyAccounts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Expense_Account_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Account",
+                        name: "FK_MoneyAccounts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Expense_ExpenseCategory_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "ExpenseCategory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Income",
+                name: "Transactions",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CategoryId = table.Column<long>(type: "bigint", nullable: true),
-                    AccountId = table.Column<long>(type: "bigint", nullable: true),
                     Sum = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CategoryId = table.Column<long>(type: "bigint", nullable: true),
+                    MoneyAccountId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Income", x => x.Id);
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Income_Account_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Account",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Income_IncomeCategory_CategoryId",
+                        name: "FK_Transactions_Category_CategoryId",
                         column: x => x.CategoryId,
-                        principalTable: "IncomeCategory",
+                        principalTable: "Category",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transactions_MoneyAccounts_MoneyAccountId",
+                        column: x => x.MoneyAccountId,
+                        principalTable: "MoneyAccounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Account_UserId",
-                table: "Account",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -298,24 +258,19 @@ namespace FinanceManager.WebApp.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Expense_AccountId",
-                table: "Expense",
-                column: "AccountId");
+                name: "IX_MoneyAccounts_UserId",
+                table: "MoneyAccounts",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Expense_CategoryId",
-                table: "Expense",
+                name: "IX_Transactions_CategoryId",
+                table: "Transactions",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Income_AccountId",
-                table: "Income",
-                column: "AccountId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Income_CategoryId",
-                table: "Income",
-                column: "CategoryId");
+                name: "IX_Transactions_MoneyAccountId",
+                table: "Transactions",
+                column: "MoneyAccountId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -336,22 +291,16 @@ namespace FinanceManager.WebApp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Expense");
-
-            migrationBuilder.DropTable(
-                name: "Income");
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "ExpenseCategory");
+                name: "Category");
 
             migrationBuilder.DropTable(
-                name: "Account");
-
-            migrationBuilder.DropTable(
-                name: "IncomeCategory");
+                name: "MoneyAccounts");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

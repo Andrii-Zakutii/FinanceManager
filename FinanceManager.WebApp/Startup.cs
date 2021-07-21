@@ -38,6 +38,7 @@ namespace FinanceManager.WebApp
                 options => options.LoginPath = "/Identity/Account/Login");
 
             services.AddTransient<IMoneyAccountRepository, EFMoneyAccountRepository>();
+            services.AddTransient<ITransactionRepository, EFTransactionRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

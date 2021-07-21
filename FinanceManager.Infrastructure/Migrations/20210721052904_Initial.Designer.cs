@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace FinanceManager.WebApp.Migrations
+namespace FinanceManager.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210718115037_Initial")]
+    [Migration("20210721052904_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,114 +21,90 @@ namespace FinanceManager.WebApp.Migrations
                 .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("FinanceManager.WebApp.Models.Account", b =>
+            modelBuilder.Entity("FinanceManager.Core.Entities.Category", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("FinanceManager.Core.Entities.MoneyAccount", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal?>("InitialSum")
+                        .IsRequired()
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Account");
+                    b.ToTable("MoneyAccounts");
                 });
 
-            modelBuilder.Entity("FinanceManager.WebApp.Models.Expense", b =>
+            modelBuilder.Entity("FinanceManager.Core.Entities.Transaction", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long?>("AccountId")
+                    b.Property<long?>("CategoryId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("CategoryId")
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("MoneyAccountId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("Sum")
                         .IsRequired()
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("Time")
+                    b.Property<DateTime?>("Time")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
-                    b.HasIndex("AccountId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Expense");
+                    b.HasIndex("MoneyAccountId");
+
+                    b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("FinanceManager.WebApp.Models.ExpenseCategory", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExpenseCategory");
-                });
-
-            modelBuilder.Entity("FinanceManager.WebApp.Models.Income", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<long?>("AccountId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CategoryId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal?>("Sum")
-                        .IsRequired()
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Income");
-                });
-
-            modelBuilder.Entity("FinanceManager.WebApp.Models.IncomeCategory", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IncomeCategory");
-                });
-
-            modelBuilder.Entity("FinanceManager.WebApp.Models.User", b =>
+            modelBuilder.Entity("FinanceManager.Core.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -324,35 +300,28 @@ namespace FinanceManager.WebApp.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("FinanceManager.WebApp.Models.Account", b =>
+            modelBuilder.Entity("FinanceManager.Core.Entities.MoneyAccount", b =>
                 {
-                    b.HasOne("FinanceManager.WebApp.Models.User", null)
+                    b.HasOne("FinanceManager.Core.Entities.User", "User")
                         .WithMany("Accounts")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FinanceManager.WebApp.Models.Expense", b =>
+            modelBuilder.Entity("FinanceManager.Core.Entities.Transaction", b =>
                 {
-                    b.HasOne("FinanceManager.WebApp.Models.Account", null)
-                        .WithMany("Expenses")
-                        .HasForeignKey("AccountId");
-
-                    b.HasOne("FinanceManager.WebApp.Models.ExpenseCategory", "Category")
+                    b.HasOne("FinanceManager.Core.Entities.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("FinanceManager.WebApp.Models.Income", b =>
-                {
-                    b.HasOne("FinanceManager.WebApp.Models.Account", null)
-                        .WithMany("Incomes")
-                        .HasForeignKey("AccountId");
-
-                    b.HasOne("FinanceManager.WebApp.Models.IncomeCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
+                    b.HasOne("FinanceManager.Core.Entities.MoneyAccount", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("MoneyAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
                 });
@@ -368,7 +337,7 @@ namespace FinanceManager.WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("FinanceManager.WebApp.Models.User", null)
+                    b.HasOne("FinanceManager.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -377,7 +346,7 @@ namespace FinanceManager.WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("FinanceManager.WebApp.Models.User", null)
+                    b.HasOne("FinanceManager.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -392,7 +361,7 @@ namespace FinanceManager.WebApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinanceManager.WebApp.Models.User", null)
+                    b.HasOne("FinanceManager.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -401,21 +370,19 @@ namespace FinanceManager.WebApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("FinanceManager.WebApp.Models.User", null)
+                    b.HasOne("FinanceManager.Core.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FinanceManager.WebApp.Models.Account", b =>
+            modelBuilder.Entity("FinanceManager.Core.Entities.MoneyAccount", b =>
                 {
-                    b.Navigation("Expenses");
-
-                    b.Navigation("Incomes");
+                    b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("FinanceManager.WebApp.Models.User", b =>
+            modelBuilder.Entity("FinanceManager.Core.Entities.User", b =>
                 {
                     b.Navigation("Accounts");
                 });
