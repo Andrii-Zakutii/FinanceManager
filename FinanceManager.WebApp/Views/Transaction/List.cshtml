@@ -4,7 +4,7 @@
     ViewData["Title"] = "Actions";
 }
 
-<h1>Actions</h1>
+<h3 class="display-4">Actions</h3>
 
 <div class="btn-group">
     <a asp-action="ListAll" class="btn @(ViewBag.Filter.Type == null ? "btn btn-primary" : "btn-secondary")">All</a>
@@ -13,7 +13,7 @@
 </div>
 
 <div class="pt-2">
-    @await  Html.PartialAsync("Filter", (TransactionsFilter)ViewBag.Filter)
+    @await Html.PartialAsync("Filter", (TransactionsFilter)ViewBag.Filter)
 </div>
 
 @if (ViewBag.Filter.Type != null)
@@ -27,10 +27,12 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Type</th>
+                @if (ViewBag.Filter.Type == null)
+                {
+                    <th>Type</th>
+                }
                 <th>Sum</th>
                 <th>Time</th>
-                <th>Description</th>
                 <th>Category</th>
                 <th>Account</th>
                 <th></th>
@@ -40,10 +42,12 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Type</td>
+                    @if (ViewBag.Filter.Type == null)
+                    {
+                        <td>@item.Type</td>
+                    }
                     <td>@item.Sum?.ToString("C")</td>
                     <td>@item.Time?.ToString("MM/dd/yyyy H:mm")</td>
-                    <td>@item.Description</td>
                     <td>@item.Category.Name</td>
                     <td>@item.MoneyAccount.Name</td>
                     <td>
