@@ -7,8 +7,6 @@ namespace FinanceManager.Core.Entities
 {
     public class Transaction : Entity
     {
-        private Category _category;
-
         [Required]
         [Column(TypeName = "decimal(18, 2)")]
         public decimal? Sum { get; set; }
@@ -21,48 +19,13 @@ namespace FinanceManager.Core.Entities
 
         public string Description { get; set; }
 
-        public Category Category
-        {
-            get => _category;
-            set
-            {
-                if (IsCompatible(value) == false)
-                    throw new ArgumentException();
+        public long? CategoryId { get; set; }
 
-                _category = value;
-            }
-        }
+        public Category Category { get; set; }
 
         [Required]
         public long MoneyAccountId { get; set; }
 
         public MoneyAccount MoneyAccount { get; set; }
-
-        #region Statistics
-        public bool BelongsTo(User user) => MoneyAccount.BelongsTo(user);
-
-        public bool BelongsTo(MoneyAccount account) => MoneyAccountId == account?.Id;
-
-        public bool IsExpense() => Type == TransactionTypes.Expense;
-
-        public bool IsIncome() => Type == TransactionTypes.Income;
-
-        public decimal GetShareWithinAccount(TimeRange range)
-        {
-            decimal sum = MoneyAccount.GetTransactionSum(TransactionTypes.Expense, range);
-            return Sum.Value / sum;
-        }
-
-        public decimal GetShare(TimeRange range)
-        {
-            var user = MoneyAccount.User;
-            decimal sum = user.GetTransactionSum(TransactionTypes.Expense, range);
-            return Sum.Value / sum;
-        }
-
-        private bool IsCompatible(Category category) =>
-            category.Type == CategoryTypes.ExpenseCategory && Type == TransactionTypes.Expense ||
-            category.Type == CategoryTypes.IncomeCategory && Type == TransactionTypes.Income;
-        #endregion
     }
 }

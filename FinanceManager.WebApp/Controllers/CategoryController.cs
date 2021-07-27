@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Identity;
 namespace FinanceManager.WebApp.Controllers
 {
     [Authorize]
-    public class MoneyAccountController : StandardController<MoneyAccount>
+    public class CategoryController : StandardController<Category>
     {
-        public MoneyAccountController(IMoneyAccountRepository repository, UserManager<User> userManager)
+        public CategoryController(ICategoryRepository repository, UserManager<User> userManager)
             : base(repository, userManager)
         {
         }
 
-        protected override bool ValidateEntity(MoneyAccount account) => account.UserId == GetUser().Id;
+        protected override bool ValidateEntity(Category category) => category.UserId == GetUser().Id;
     }
 }

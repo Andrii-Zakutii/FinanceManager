@@ -6,22 +6,20 @@ using System.Linq;
 
 namespace FinanceManager.Infrastructure.Data.RepositoryImplementations
 {
-    public class EFTransactionRepository : CRUDRepository<Transaction>, ITransactionRepository
+    public class EFTransactionRepository : EFRepository<Transaction>, ITransactionRepository
     {
         public EFTransactionRepository(DataContext context)
             : base(context)
         {
         }
 
-        public IQueryable<Transaction> GetAll(User user, TransactionTypes? type = null) => 
-            Context.Transactions
-            .Where(t => t.Type == type)
+        public override Transaction Get(long id) => GetAll()
             .Include(t => t.MoneyAccount)
-            .Where(t => t.MoneyAccount.UserId == user.Id);
+            .Include(t => t.Category)
+            .FirstOrDefault(t => t.Id == id);
 
-        public IQueryable<Transaction> GetAll(MoneyAccount account, TransactionTypes? type = null) => 
-            Context.Transactions
-            .Where(t => t.Type == type)
-            .Where(t => t.MoneyAccountId == account.Id);
+        public override IQueryable<Transaction> GetAll(User user) => GetAll().Where(t => t.MoneyAccount.User.Id == user.Id);
+
+        public IQueryable<Transaction> GetAll(MoneyAccount account) => GetAll().Where(t => t.MoneyAccount.Id == account.Id);
     }
 }

@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using FinanceManager.Core.Entities;
+using System.Linq;
 
 namespace FinanceManager.Core.Repositories
 {
-    public interface ICRUDRepository<T>
+    public interface IRepository<T>
     {
+        IQueryable<T> GetAll(User user);
         IQueryable<T> GetAll();
         T Get(long id);
         void Update(T entity);

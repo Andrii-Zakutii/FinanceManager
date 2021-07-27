@@ -4,14 +4,16 @@ using FinanceManager.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinanceManager.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210721131344_AddUserIdToCategory")]
+    partial class AddUserIdToCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,9 +38,15 @@ namespace FinanceManager.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("FinanceManager.Core.Entities.MoneyAccount", b =>
@@ -298,6 +306,17 @@ namespace FinanceManager.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("FinanceManager.Core.Entities.Category", b =>
+                {
+                    b.HasOne("FinanceManager.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FinanceManager.Core.Entities.MoneyAccount", b =>
                 {
                     b.HasOne("FinanceManager.Core.Entities.User", "User")
@@ -312,16 +331,18 @@ namespace FinanceManager.Infrastructure.Migrations
             modelBuilder.Entity("FinanceManager.Core.Entities.Transaction", b =>
                 {
                     b.HasOne("FinanceManager.Core.Entities.Category", "Category")
-                        .WithMany()
+                        .WithMany("Transactions")
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("FinanceManager.Core.Entities.MoneyAccount", null)
+                    b.HasOne("FinanceManager.Core.Entities.MoneyAccount", "MoneyAccount")
                         .WithMany("Transactions")
                         .HasForeignKey("MoneyAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("MoneyAccount");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -373,6 +394,11 @@ namespace FinanceManager.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FinanceManager.Core.Entities.Category", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("FinanceManager.Core.Entities.MoneyAccount", b =>

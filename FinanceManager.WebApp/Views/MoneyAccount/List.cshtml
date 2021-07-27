@@ -12,22 +12,26 @@
     <table class="table">
         <thead class="thead-light">
             <tr>
+                <th>#</th>
                 <th>Name</th>
                 <th>Initial Sum</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
+            @{ int i = 1; }
             @foreach (var account in Model)
             {
                 <tr>
+                    <td>@i</td>
                     <td>@account.Name</td>
                     <td>@Html.Raw($"{account.InitialSum:c}")</td>
                     <td>
-                        <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-primary">Details</a>
-                        <a asp-action="Update" asp-route-id="@account.Id" class="btn btn-outline-primary">Edit</a>
+                        <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-primary">Details</a>
+                        <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-outline-primary">Edit</a>
                         <a asp-action="Delete" asp-route-id="@account.Id" class="btn btn-outline-danger">Delete</a>
                     </td>
+                    @{ i++; }
                 </tr>
             }
         </tbody>

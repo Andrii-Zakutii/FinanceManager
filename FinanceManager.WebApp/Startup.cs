@@ -35,10 +35,17 @@ namespace FinanceManager.WebApp
                 .AddDefaultTokenProviders();
 
             services.Configure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme,
-                options => options.LoginPath = "/Identity/Account/Login");
+                options =>
+                {
+                    options.LoginPath = "/Identity/Account/Login";
+                });
+
+            services.AddMemoryCache();
+            services.AddSession();
 
             services.AddTransient<IMoneyAccountRepository, EFMoneyAccountRepository>();
             services.AddTransient<ITransactionRepository, EFTransactionRepository>();
+            services.AddTransient<ICategoryRepository, EFCategoryRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -63,12 +70,12 @@ namespace FinanceManager.WebApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=MoneyAccount}/{action=Index}/{id?}");
+                    pattern: "{controller=Transaction}/{action=ListExpenses}/{id?}");
 
                 endpoints.MapRazorPages();
             });
 
-            IdentificationSeedData.EnsurePopulated(app);
+            SeedData.EnsurePopulated(app);
         }
     }
 }
