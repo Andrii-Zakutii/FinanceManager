@@ -1,0 +1,45 @@
+﻿@model TransactionsFilter
+
+<form asp-action="List">
+    <div class="row">
+        <div class="col-lg-3 col-xl-3">
+            @if (Model.Type != null)
+            {
+                <div class="form-group">
+                    <label asp-for="CategoryId">Category</label>
+                    <select asp-for="CategoryId" class="form-control">
+                        <option value="">All</option>
+                        @foreach (Category category in ViewBag.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="AccountId">Account</label>
+                <select asp-for="AccountId" class="form-control">
+                    <option value="">All</option>
+                    @foreach (MoneyAccount account in ViewBag.Accounts)
+                    {
+                        <option value="@account.Id">@account.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-3 col-xl-3">
+            <div class="form-group">
+                <label asp-for="From">From</label>
+                <input asp-for="From" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="From">To</label>
+                <input asp-for="To" class="form-control" />
+            </div>
+            <input type="hidden" asp-for="Type" />
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Apply" class="btn btn-success" />
+    </div>
+</form>

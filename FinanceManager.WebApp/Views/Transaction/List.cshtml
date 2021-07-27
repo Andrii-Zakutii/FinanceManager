@@ -1,21 +1,25 @@
 ﻿@model IEnumerable<Transaction>
 
 @{
-    ViewData["Title"] = "List";
+    ViewData["Title"] = "Actions";
 }
 
-<h1>List</h1>
+<h1>Actions</h1>
 
 <div class="btn-group">
-    <a asp-action="ListAll" class="btn @(ViewBag.TransactionType == null ? "btn btn-primary" : "btn-secondary")">All</a>
-    <a asp-action="ListExpenses" class="btn @(ViewBag.TransactionType == TransactionTypes.Expense ? "btn btn-primary" : "btn-secondary")">Expenses</a>
-    <a asp-action="ListIncomes" class="btn @(ViewBag.TransactionType == TransactionTypes.Income ? "btn btn-primary" : "btn-secondary")">Incomes</a>
+    <a asp-action="ListAll" class="btn @(ViewBag.Filter.Type == null ? "btn btn-primary" : "btn-secondary")">All</a>
+    <a asp-action="ListExpenses" class="btn @(ViewBag.Filter.Type == TransactionTypes.Expense ? "btn btn-primary" : "btn-secondary")">Expenses</a>
+    <a asp-action="ListIncomes" class="btn @(ViewBag.Filter.Type == TransactionTypes.Income ? "btn btn-primary" : "btn-secondary")">Incomes</a>
 </div>
 
-@if (ViewBag.TransactionType != null)
+<div class="pt-2">
+    @await  Html.PartialAsync("Filter", (TransactionsFilter)ViewBag.Filter)
+</div>
+
+@if (ViewBag.Filter.Type != null)
 {
-    <div class="pt-2">
-        <a asp-action="Create" asp-route-type="@ViewBag.TransactionType" class="btn btn-primary">Create</a>
+    <div>
+        <a asp-action="Create" asp-route-type="@ViewBag.Filter.Type" class="btn btn-primary">Create</a>
     </div>
 }
 

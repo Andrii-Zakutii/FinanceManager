@@ -1,9 +1,12 @@
 ﻿using FinanceManager.Core.Entities;
 using FinanceManager.Core.Repositories;
+using FinanceManager.WebApp.Extensions;
+using FinanceManager.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FinanceManager.WebApp.Controllers
@@ -15,6 +18,10 @@ namespace FinanceManager.WebApp.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMoneyAccountRepository _accountRepository;
         private readonly ITransactionRepository _transactionRepository;
+
+        private readonly string commonKey = "1";
+        private readonly string expenseKey = "2";
+        private readonly string incomeKey = "3";
 
         public TransactionController(
             ITransactionRepository transactionRepository,
@@ -28,11 +35,30 @@ namespace FinanceManager.WebApp.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        public IActionResult ListAll() => List(null);
+        public IActionResult ListAll() => List(type: null);
 
         public IActionResult ListIncomes() => List(TransactionTypes.Income);
 
         public IActionResult ListExpenses() => List(TransactionTypes.Expense);
+
+        [HttpPost]
+        public IActionResult List(TransactionsFilter filter)
+        {
+            SetFilter(filter);
+            return List(filter.Type);
+        }
+
+        private IActionResult List(TransactionTypes? type)
+        {
+            var filter = GetFilter(type);
+            filter.Type = type;
+            SetFilter(filter);
+
+            ViewBag.Filter = filter;
+            PrepareData(filter.Type ?? default);
+
+            return View("List", GetTransactions(type));
+        }
 
         public IActionResult Create(TransactionTypes type)
         {
@@ -112,20 +138,34 @@ namespace FinanceManager.WebApp.Controllers
             return;
         }
 
-        private IActionResult List(TransactionTypes? type)
-        {
-            ViewBag.TransactionType = type;
-            return View("List", type == null ? GetTransactions() : GetTransactions(type));
-        }
-
         private User GetUser() => _userManager.GetUserAsync(User).Result;
 
-        private IQueryable<Transaction> GetTransactions() => _transactionRepository
+        private IEnumerable<Transaction> GetTransactions(TransactionTypes? type) => GetQuery(type).ToArray();
+
+        private IQueryable<Transaction> GetQuery(TransactionTypes? type) => _transactionRepository
             .GetAll(GetUser())
             .Include(t => t.Category)
-            .Include(t => t.MoneyAccount);
+            .Include(t => t.MoneyAccount)
+            .Apply(GetFilter(type));
 
-        private IQueryable<Transaction> GetTransactions(TransactionTypes? type) => GetTransactions()
-            .Where(t => t == null ? true : t.Type == type);
+        private TransactionsFilter GetFilter(TransactionTypes? type) =>
+            HttpContext.Session.GetJson<TransactionsFilter>(GetKey(type)) ?? new();
+
+        private void SetFilter(TransactionsFilter filter) =>
+            HttpContext.Session.SetJson(GetKey(filter.Type), filter);
+
+        private string GetKey(TransactionTypes? type)
+        {
+            string key;
+
+            if (type == null)
+                key = commonKey;
+            else if (type == TransactionTypes.Expense)
+                key = expenseKey;
+            else
+                key = incomeKey;
+
+            return key;
+        }
     }
 }

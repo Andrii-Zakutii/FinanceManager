@@ -27,9 +27,9 @@
                     <td>@account.Name</td>
                     <td>@Html.Raw($"{account.InitialSum:c}")</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-primary">Details</a>
-                        <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-outline-primary">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@account.Id" class="btn btn-outline-danger">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-primary p-1">Details</a>
+                        <a asp-action="Edit" asp-route-id="@account.Id" class="btn btn-outline-primary p-1">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@account.Id" class="btn btn-outline-danger p-1">Delete</a>
                     </td>
                     @{ i++; }
                 </tr>
