@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace FinanceManager.Core.Services
 {
-    class TransactionsStatistics
+    public record TransactionsStatistics
     {
         private readonly IEnumerable<Transaction> _transactions;
 

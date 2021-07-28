@@ -1,5 +1,6 @@
 ﻿using FinanceManager.Core.Entities;
 using FinanceManager.Core.Repositories;
+using FinanceManager.Core.Services;
 using FinanceManager.WebApp.Extensions;
 using FinanceManager.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -14,14 +15,14 @@ namespace FinanceManager.WebApp.Controllers
     [Authorize]
     public class TransactionController : Controller
     {
+        private const string commonKey = "1";
+        private const string expenseKey = "2";
+        private const string incomeKey = "3";
+
         private readonly UserManager<User> _userManager;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMoneyAccountRepository _accountRepository;
         private readonly ITransactionRepository _transactionRepository;
-
-        private readonly string commonKey = "1";
-        private readonly string expenseKey = "2";
-        private readonly string incomeKey = "3";
 
         public TransactionController(
             ITransactionRepository transactionRepository,
@@ -46,18 +47,6 @@ namespace FinanceManager.WebApp.Controllers
         {
             SetFilter(filter);
             return List(filter.Type);
-        }
-
-        private IActionResult List(TransactionTypes? type)
-        {
-            var filter = GetFilter(type);
-            filter.Type = type;
-            SetFilter(filter);
-
-            ViewBag.Filter = filter;
-            PrepareData(filter.Type ?? default);
-
-            return View("List", GetTransactions(type));
         }
 
         public IActionResult Create(TransactionTypes type)
@@ -127,6 +116,17 @@ namespace FinanceManager.WebApp.Controllers
             return View(transaction);
         }
 
+        private IActionResult List(TransactionTypes? type)
+        {
+            var filter = GetFilter(type);
+            ViewBag.Filter = filter;
+            PrepareData(filter.Type ?? default);
+            var transactions = GetTransactions(type);
+            var statistics = new TransactionsStatistics(transactions);
+            ViewBag.Statistics = statistics;
+            return View("List", transactions);
+        }
+
         private void PrepareData(TransactionTypes type)
         {
             ViewBag.Categories = _categoryRepository.GetAll(GetUser(), type);
@@ -149,7 +149,7 @@ namespace FinanceManager.WebApp.Controllers
             .Apply(GetFilter(type));
 
         private TransactionsFilter GetFilter(TransactionTypes? type) =>
-            HttpContext.Session.GetJson<TransactionsFilter>(GetKey(type)) ?? new();
+            HttpContext.Session.GetJson<TransactionsFilter>(GetKey(type)) ?? new() { Type = type };
 
         private void SetFilter(TransactionsFilter filter) =>
             HttpContext.Session.SetJson(GetKey(filter.Type), filter);
@@ -167,5 +167,6 @@ namespace FinanceManager.WebApp.Controllers
 
             return key;
         }
+
     }
 }

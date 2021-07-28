@@ -35,6 +35,8 @@
                 <th>Time</th>
                 <th>Category</th>
                 <th>Account</th>
+                <th>Share</th>
+                <th>Share</th>
                 <th></th>
             </tr>
         </thead>
@@ -50,6 +52,7 @@
                     <td>@item.Time?.ToString("MM/dd/yyyy H:mm")</td>
                     <td>@item.Category.Name</td>
                     <td>@item.MoneyAccount.Name</td>
+                    <td>@Html.Raw($"{ViewBag.Statistics.GetShare(item):P}")</td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">Edit</a>
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary">Details</a>
@@ -60,4 +63,3 @@
         </tbody>
     </table>
 </div>
-
